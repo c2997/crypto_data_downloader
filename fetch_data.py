@@ -28,10 +28,14 @@ def fetch_data(symbol, category, interval):
         timestamp -= 200 * 60 * interval
 
     data = pd.DataFrame(values)
-    data.columns = ["timestamp", "open", "high", "low", "close", "volume", "turnover"]
-    data["datetime"] = (data['timestamp'].astype(int)/1000).apply(datetime.fromtimestamp)
-    data.sort_values("datetime", inplace=True)
-    data.set_index("datetime", inplace=True)
+    data.columns = ["date_time", "op", "hi", "lo", "cl", "volume", "turnover"]
+    data["timestamp"] = (data['date_time'].astype(int)/1000).apply(datetime.fromtimestamp)
+    data['timestamp'] = pd.to_datetime(data['timestamp'], unit='s', utc=True)
+    data.sort_values("timestamp", inplace=True)
+    data.set_index("timestamp", inplace=True)
+
+    for col in ['op', 'hi', 'lo', 'cl', 'volume']:
+        data[col] = data[col].astype('float64')
 
     return data
 
